@@ -1,7 +1,6 @@
 package itau.gateway.queue.infrastructure.adapter.out.persistence.mongo.repository;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
@@ -23,11 +22,6 @@ public class PaymentRepositoryAdapter implements PaymentRepositoryPort {
         repository.save(toDocument(Objects.requireNonNull(pagamento, "Pagamento não pode ser nulo")));
     }
 
-    @Override
-    public Optional<Pagamento> findById(String id) {
-        return repository.findById(Objects.requireNonNull(id, "ID não pode ser nulo")).map(this::toDomain);
-    }
-
     private PagamentoDocument toDocument(Pagamento domain) {
         PagamentoDocument document = new PagamentoDocument();
         document.setId(domain.getId());
@@ -37,16 +31,5 @@ public class PaymentRepositoryAdapter implements PaymentRepositoryPort {
         document.setStatus(domain.getStatus());
         document.setRetryCount(domain.getRetryCount());
         return document;
-    }
-
-    private Pagamento toDomain(PagamentoDocument document) {
-        Pagamento domain = new Pagamento();
-        domain.setId(document.getId());
-        domain.setAmount(document.getAmount());
-        domain.setSenderAccount(document.getSenderAccount());
-        domain.setReceiverPixKey(document.getReceiverPixKey());
-        domain.setStatus(document.getStatus());
-        domain.setRetryCount(document.getRetryCount());
-        return domain;
     }
 }

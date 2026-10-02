@@ -1,5 +1,7 @@
+### Mesma Idempotency-Key + mesmo corpo = mesmo pagamento (reenvio seguro). Troque a chave para criar outro pagamento.
 POST http://localhost:8081/api/pix/payments
 Content-Type: application/json
+Idempotency-Key: 3f6b1c9e-8d2a-4c57-9a41-2b7d5e0f1a63
 
 {
   "amount": 200.00,

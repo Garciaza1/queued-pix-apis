@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,6 +12,8 @@ import itau.gateway.queue.domain.model.pagamento.Pagamento;
 import itau.gateway.queue.domain.model.pagamento.PagamentoRequest;
 import itau.gateway.queue.domain.port.in.PagamentoUseCase;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @RestController
 @RequestMapping("api/pix/payments")
@@ -23,10 +26,12 @@ public class PagamentoController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> processPayment(@Valid @RequestBody PagamentoRequest paymentRequest) {
+    public ResponseEntity<PagamentoResponse> processPayment(
+            @RequestHeader("Idempotency-Key") @NotBlank @Size(max = 64) String idempotencyKey,
+            @Valid @RequestBody PagamentoRequest paymentRequest) {
         Pagamento pagamento = convertToPagamento(paymentRequest);
-        pagamentoUseCase.processPayment(pagamento);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        String paymentId = pagamentoUseCase.processPayment(pagamento, idempotencyKey);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(new PagamentoResponse(paymentId));
     }
 
     private Pagamento convertToPagamento(PagamentoRequest paymentRequest) {

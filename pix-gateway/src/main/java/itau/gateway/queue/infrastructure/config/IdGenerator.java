@@ -4,9 +4,12 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-@Component
-public class IdGenerator {
+import itau.gateway.queue.domain.port.out.IdGeneratorPort;
 
+@Component
+public class IdGenerator implements IdGeneratorPort {
+
+    @Override
     public String generateId() {
         return UUID.randomUUID().toString();
     }
