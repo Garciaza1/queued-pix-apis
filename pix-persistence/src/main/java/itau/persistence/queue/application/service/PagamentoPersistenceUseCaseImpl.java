@@ -34,6 +34,18 @@ public class PagamentoPersistenceUseCaseImpl implements PagamentoPersistenceUseC
             return;
         }
 
+        if (message.getId() == null) {
+            System.out.println("Mensagem de pagamento sem ID. Abortando persist.");
+            return;
+        }
+
+        // Idempotência: pagamento já finalizado (SUCESSO/FALHOU) não é reprocessado.
+        Optional<Pagamento> existingPagamentoOpt = repository.findById(message.getId());
+        if (existingPagamentoOpt.isPresent() && existingPagamentoOpt.get().isFinalizado()) {
+            System.out.println("Pagamento " + message.getId() + " já finalizado como " + existingPagamentoOpt.get().getStatus() + ". Mensagem duplicada ignorada.");
+            return;
+        }
+
         // Valida amount caso venha zerado na fila
         BigDecimal amount = message.getAmount();
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -43,8 +55,7 @@ public class PagamentoPersistenceUseCaseImpl implements PagamentoPersistenceUseC
             return;
         }
 
-        // recupera caso existe, se não cria um novo
-        Optional<Pagamento> existingPagamentoOpt = repository.findById(message.getId());
+        // reaproveita o pagamento existente (ainda PROCESSANDO), se não cria um novo
         Pagamento pagamento = existingPagamentoOpt.orElseGet(() -> buildPagamentoFromMessage(message, null, null));
 
         // Atualiza os campos

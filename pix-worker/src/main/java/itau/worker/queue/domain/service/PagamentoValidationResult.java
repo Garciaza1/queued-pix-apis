@@ -1,4 +1,4 @@
-package itau.worker.queue.application.port.validator;
+package itau.worker.queue.domain.service;
 
 public class PagamentoValidationResult {
     private final boolean valid;

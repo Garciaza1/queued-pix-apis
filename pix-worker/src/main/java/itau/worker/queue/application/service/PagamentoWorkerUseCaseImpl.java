@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import itau.pix.commons.enums.StatusPagamento;
 import itau.worker.queue.domain.port.in.PagamentoWorkerUseCase;
-import itau.worker.queue.application.port.validator.PagamentoValidator;
+import itau.worker.queue.domain.service.PagamentoValidator;
 import itau.worker.queue.domain.model.ChavePix;
 import itau.worker.queue.domain.model.PagamentoMessage;
 import itau.worker.queue.domain.port.out.ChavePixRepositoryPort;

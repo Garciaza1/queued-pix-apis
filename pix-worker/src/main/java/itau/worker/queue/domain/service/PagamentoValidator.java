@@ -1,14 +1,12 @@
-package itau.worker.queue.application.port.validator;
+package itau.worker.queue.domain.service;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.stereotype.Component;
-
 import itau.worker.queue.domain.model.ChavePix;
 import itau.worker.queue.domain.model.PagamentoMessage;
-@Component
+
 public class PagamentoValidator {
 
     public PagamentoValidationResult validate(PagamentoMessage message,

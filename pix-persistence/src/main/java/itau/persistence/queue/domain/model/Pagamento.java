@@ -16,4 +16,8 @@ public class Pagamento {
     private String receiverPixKey;
     private StatusPagamento status;
     private String errorDescription;
+
+    public boolean isFinalizado() {
+        return status != null && status.isTerminal();
+    }
 }
