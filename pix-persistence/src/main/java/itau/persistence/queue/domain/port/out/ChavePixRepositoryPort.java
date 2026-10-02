@@ -1,5 +1,6 @@
 package itau.persistence.queue.domain.port.out;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,7 +14,11 @@ public interface ChavePixRepositoryPort {
 
     Optional<ChavePix> findByNumeroConta(String numeroConta);
 
-    ChavePix save(ChavePix chavePix);
-
     Optional<ChavePix> findById(UUID id);
+
+    /** Atômico: confere e debita no mesmo passo. Retorna false, sem alterar nada, se o saldo é insuficiente ou a chave não existe. */
+    boolean debitarSeHouverSaldo(UUID chaveId, BigDecimal valor);
+
+    /** Atômico. Retorna false, sem alterar nada, se a chave não existe. */
+    boolean creditar(UUID chaveId, BigDecimal valor);
 }

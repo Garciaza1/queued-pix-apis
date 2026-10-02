@@ -4,8 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +29,7 @@ class PagamentoPersistenceUseCaseImplTest {
     private InMemoryChavePixRepository chavePixRepository;
     private InMemoryPagamentoRepository pagamentoRepository;
     private PagamentoPersistenceUseCaseImpl useCase;
+    private ChavePix destinatario;
 
     @BeforeEach
     void setUp() {
@@ -35,7 +38,7 @@ class PagamentoPersistenceUseCaseImplTest {
         useCase = new PagamentoPersistenceUseCaseImpl(pagamentoRepository, chavePixRepository);
 
         chavePixRepository.save(chavePix("12345679801", "1234", CONTA_REMETENTE, "1000.00"));
-        chavePixRepository.save(chavePix(CHAVE_DESTINATARIO, "1235", "12345678", "0.00"));
+        destinatario = chavePixRepository.save(chavePix(CHAVE_DESTINATARIO, "1235", "12345678", "0.00"));
         pagamentoRepository.save(new Pagamento(
                 PAGAMENTO_ID, new BigDecimal("200.00"), CONTA_REMETENTE, CHAVE_DESTINATARIO,
                 StatusPagamento.PROCESSANDO, null));
@@ -78,8 +81,32 @@ class PagamentoPersistenceUseCaseImplTest {
         assertThat(saldoDoDestinatario()).isEqualByComparingTo("0.00");
     }
 
+    @Test
+    void saldoInsuficienteNaoMovimentaNadaEMarcaOPagamentoComoFalhou() {
+        useCase.persist(mensagemDeValor("1500.00"), true);
+
+        assertThat(saldoDoRemetente()).isEqualByComparingTo("1000.00");
+        assertThat(saldoDoDestinatario()).isEqualByComparingTo("0.00");
+        assertThat(statusDoPagamento()).isEqualTo(StatusPagamento.FALHOU);
+    }
+
+    @Test
+    void estornaODebitoQuandoNaoConsegueCreditarODestinatario() {
+        chavePixRepository.recusarCreditosPara(destinatario.getId());
+
+        useCase.persist(mensagem(), true);
+
+        assertThat(saldoDoRemetente()).isEqualByComparingTo("1000.00");
+        assertThat(saldoDoDestinatario()).isEqualByComparingTo("0.00");
+        assertThat(statusDoPagamento()).isEqualTo(StatusPagamento.FALHOU);
+    }
+
     private PagamentoMessage mensagem() {
-        return new PagamentoMessage(PAGAMENTO_ID, new BigDecimal("200.00"), CONTA_REMETENTE, CHAVE_DESTINATARIO, null, 0, null);
+        return mensagemDeValor("200.00");
+    }
+
+    private PagamentoMessage mensagemDeValor(String valor) {
+        return new PagamentoMessage(PAGAMENTO_ID, new BigDecimal(valor), CONTA_REMETENTE, CHAVE_DESTINATARIO, null, 0, null);
     }
 
     private BigDecimal saldoDoRemetente() {
@@ -112,6 +139,7 @@ class PagamentoPersistenceUseCaseImplTest {
     private static final class InMemoryChavePixRepository implements ChavePixRepositoryPort {
 
         private final Map<UUID, ChavePix> store = new HashMap<>();
+        private final Set<UUID> chavesQueRecusamCredito = new HashSet<>();
 
         @Override
         public Optional<ChavePix> findByValorChave(String valorChave) {
@@ -138,14 +166,38 @@ class PagamentoPersistenceUseCaseImplTest {
         }
 
         @Override
-        public ChavePix save(ChavePix chavePix) {
+        public Optional<ChavePix> findById(UUID id) {
+            return Optional.ofNullable(store.get(id)).map(InMemoryChavePixRepository::copy);
+        }
+
+        @Override
+        public boolean debitarSeHouverSaldo(UUID chaveId, BigDecimal valor) {
+            ChavePix chave = store.get(chaveId);
+            if (chave == null || chave.getSaldo().compareTo(valor) < 0) {
+                return false;
+            }
+            chave.setSaldo(chave.getSaldo().subtract(valor));
+            return true;
+        }
+
+        @Override
+        public boolean creditar(UUID chaveId, BigDecimal valor) {
+            ChavePix chave = store.get(chaveId);
+            if (chave == null || chavesQueRecusamCredito.contains(chaveId)) {
+                return false;
+            }
+            chave.setSaldo(chave.getSaldo().add(valor));
+            return true;
+        }
+
+        // Preparação dos testes: não faz parte da porta, que propositalmente não expõe save().
+        ChavePix save(ChavePix chavePix) {
             store.put(chavePix.getId(), copy(chavePix));
             return copy(chavePix);
         }
 
-        @Override
-        public Optional<ChavePix> findById(UUID id) {
-            return Optional.ofNullable(store.get(id)).map(InMemoryChavePixRepository::copy);
+        void recusarCreditosPara(UUID chaveId) {
+            chavesQueRecusamCredito.add(chaveId);
         }
 
         private static ChavePix copy(ChavePix c) {

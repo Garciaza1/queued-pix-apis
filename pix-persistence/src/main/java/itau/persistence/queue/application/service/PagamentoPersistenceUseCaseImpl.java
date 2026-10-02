@@ -74,22 +74,20 @@ public class PagamentoPersistenceUseCaseImpl implements PagamentoPersistenceUseC
                 ChavePix sender = senderOpt.get();
                 ChavePix receiver = receiverOpt.get();
 
-                // Verifica saldo suficiente caso tenha passado errado pelo worker
-                if (sender.getSaldo().compareTo(amount) >= 0) {
-                    // Atualiza saldos
-                    sender.setSaldo(sender.getSaldo().subtract(amount));
-                    receiver.setSaldo(receiver.getSaldo().add(amount));
-
-                    chavePixRepository.save(sender);
-                    chavePixRepository.save(receiver);
-
-                    pagamento.setStatus(StatusPagamento.SUCESSO);
-                    pagamento.setErrorDescription(null);
-                    System.out.println("Pagamento " + pagamento.getId() + " aplicado: " + amount + " debitado de " + sender.getNumeroConta() + " e creditado em " + receiver.getNumeroConta());
-                } else {// caso Saldo insuficiente
+                // O banco confere o saldo e debita no mesmo passo (atômico): o saldo lido acima pode já estar velho.
+                if (!chavePixRepository.debitarSeHouverSaldo(sender.getId(), amount)) {
                     pagamento.setStatus(StatusPagamento.FALHOU);
                     pagamento.setErrorDescription("Saldo insuficiente");
                     System.out.println("Pagamento " + pagamento.getId() + " falhou: saldo insuficiente em conta " + sender.getNumeroConta());
+                } else if (!chavePixRepository.creditar(receiver.getId(), amount)) {
+                    chavePixRepository.creditar(sender.getId(), amount); // estorno: nunca deixar débito sem crédito
+                    pagamento.setStatus(StatusPagamento.FALHOU);
+                    pagamento.setErrorDescription("Chave do destinatário não encontrada");
+                    System.out.println("Pagamento " + pagamento.getId() + " falhou: destinatário não encontrado no crédito, débito estornado");
+                } else {
+                    pagamento.setStatus(StatusPagamento.SUCESSO);
+                    pagamento.setErrorDescription(null);
+                    System.out.println("Pagamento " + pagamento.getId() + " aplicado: " + amount + " debitado de " + sender.getNumeroConta() + " e creditado em " + receiver.getNumeroConta());
                 }
 
             } else {

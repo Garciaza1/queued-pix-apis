@@ -1,9 +1,14 @@
 package itau.persistence.queue.infrastructure.adapter.out.persistence.mongo.repository;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import itau.persistence.queue.domain.port.out.ChavePixRepositoryPort;
@@ -14,9 +19,11 @@ import itau.persistence.queue.infrastructure.adapter.out.persistence.mongo.docum
 public class ChavePixRepositoryAdapter implements ChavePixRepositoryPort {
 
     private final SpringDataChavePixMongoRepository mongoRepository;
+    private final MongoTemplate mongoTemplate;
 
-    public ChavePixRepositoryAdapter(SpringDataChavePixMongoRepository mongoRepository) {
+    public ChavePixRepositoryAdapter(SpringDataChavePixMongoRepository mongoRepository, MongoTemplate mongoTemplate) {
         this.mongoRepository = mongoRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
@@ -35,31 +42,22 @@ public class ChavePixRepositoryAdapter implements ChavePixRepositoryPort {
     }
 
     @Override
-    public ChavePix save(ChavePix chavePix) {
-        var saved = mongoRepository.save(toDocument(Objects.requireNonNull(chavePix, "ChavePix não pode ser nulo")));
-        return toDomain(saved);
-    }
-
-    @Override
     public Optional<ChavePix> findById(UUID id) {
         return mongoRepository.findById(Objects.requireNonNull(id, "UUID não pode ser nulo")).map(this::toDomain);
     }
 
-    private ChavePixDocument toDocument(ChavePix domain) {
-        return ChavePixDocument.builder()
-                .id(domain.getId())
-                .tipoChave(domain.getTipoChave())
-                .valorChave(domain.getValorChave())
-                .tipoConta(domain.getTipoConta())
-                .numeroAgencia(domain.getNumeroAgencia())
-                .numeroConta(domain.getNumeroConta())
-                .nomeCorrentista(domain.getNomeCorrentista())
-                .sobrenomeCorrentista(domain.getSobrenomeCorrentista())
-                .saldo(domain.getSaldo())
-                .dataHoraInclusao(domain.getDataHoraInclusao())
-                .dataHoraInativacao(domain.getDataHoraInativacao())
-                .status(domain.getStatus())
-                .build();
+    @Override
+    public boolean debitarSeHouverSaldo(UUID chaveId, BigDecimal valor) {
+        Query query = Query.query(Criteria.where("id").is(chaveId).and("saldo").gte(valor));
+        Update update = new Update().inc("saldo", valor.negate());
+        return mongoTemplate.updateFirst(query, update, ChavePixDocument.class).getMatchedCount() == 1;
+    }
+
+    @Override
+    public boolean creditar(UUID chaveId, BigDecimal valor) {
+        Query query = Query.query(Criteria.where("id").is(chaveId));
+        Update update = new Update().inc("saldo", valor);
+        return mongoTemplate.updateFirst(query, update, ChavePixDocument.class).getMatchedCount() == 1;
     }
 
     private ChavePix toDomain(ChavePixDocument document) {
