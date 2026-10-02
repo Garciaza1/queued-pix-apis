@@ -1,17 +1,16 @@
 package itau.gateway.queue.application.service;
 
 import java.util.concurrent.TimeUnit;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import itau.gateway.queue.domain.model.pagamento.Pagamento;
 import itau.gateway.queue.domain.model.pagamento.PagamentoMessage;
 import itau.gateway.queue.domain.port.in.PagamentoUseCase;
+import itau.gateway.queue.domain.port.out.PaymentMessageSenderPort;
 import itau.gateway.queue.domain.port.out.PaymentRepositoryPort;
 import itau.gateway.queue.infrastructure.config.IdGenerator;
 import itau.pix.commons.enums.StatusPagamento;
-import itau.pix.commons.messaging.RabbitMQConstants;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -21,16 +20,16 @@ public class PagamentoUseCaseImpl implements PagamentoUseCase {
 
     private final IdGenerator idGenerator;
     private final PaymentRepositoryPort paymentRepository;
-    private final RabbitTemplate rabbitTemplate;
+    private final PaymentMessageSenderPort messageSenderPort;
 
     private final Cache<String, Boolean> transactionCache = Caffeine.newBuilder()
             .expireAfterWrite(2, TimeUnit.MINUTES)
             .build();
 
-    public PagamentoUseCaseImpl(IdGenerator idGenerator, PaymentRepositoryPort paymentRepository, RabbitTemplate rabbitTemplate) {
+    public PagamentoUseCaseImpl(IdGenerator idGenerator, PaymentRepositoryPort paymentRepository, PaymentMessageSenderPort messageSenderPort) {
         this.idGenerator = idGenerator;
         this.paymentRepository = paymentRepository;
-        this.rabbitTemplate = rabbitTemplate;
+        this.messageSenderPort = messageSenderPort;
     }
 
     @Override
@@ -75,7 +74,7 @@ public class PagamentoUseCaseImpl implements PagamentoUseCase {
         paymentMessage.setSenderAccount(paymentRequest.getSenderAccount());
         paymentMessage.setReceiverPixKey(paymentRequest.getReceiverPixKey());
 
-        rabbitTemplate.convertAndSend(RabbitMQConstants.FILA_PAGAMENTO, paymentMessage);
+        messageSenderPort.sendPaymentMessage(paymentMessage);
         System.out.println("Payment with ID " + paymentId + " sent to queue.");
     }
 
