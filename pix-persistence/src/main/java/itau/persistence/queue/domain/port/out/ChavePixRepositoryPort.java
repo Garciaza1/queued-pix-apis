@@ -3,11 +3,8 @@ package itau.persistence.queue.domain.port.out;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.stereotype.Repository;
-
 import itau.persistence.queue.domain.model.ChavePix;
 
-@Repository
 public interface ChavePixRepositoryPort {
 
     Optional<ChavePix> findByValorChave(String valorChave);

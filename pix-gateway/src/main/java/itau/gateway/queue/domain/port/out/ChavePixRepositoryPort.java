@@ -5,11 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.stereotype.Repository;
-
 import itau.gateway.queue.domain.model.chave.ChavePix;
 
-@Repository
 public interface ChavePixRepositoryPort {
     ChavePix save(ChavePix chavePix);
     Optional<ChavePix> findById(UUID id);

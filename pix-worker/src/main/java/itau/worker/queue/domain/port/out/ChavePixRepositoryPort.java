@@ -3,11 +3,8 @@ package itau.worker.queue.domain.port.out;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Repository;
-
 import itau.worker.queue.domain.model.ChavePix;
 
-@Repository
 public interface ChavePixRepositoryPort {
     Optional<ChavePix> findById(String id);
     boolean existsByValorChave(String valorChave);
