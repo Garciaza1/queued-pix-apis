@@ -3,9 +3,6 @@ package itau.worker.queue.domain.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import itau.pix.commons.config.DatabaseConstants;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection = DatabaseConstants.PIX_COLLECTION)
 public class ChavePix {
 
     private String id;

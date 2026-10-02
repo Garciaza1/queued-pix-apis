@@ -1,6 +1,7 @@
 package itau.persistence.queue.infrastructure.adapter.out;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -18,11 +19,34 @@ public class PagamentoRepositoryAdapter implements PagamentoRepositoryPort {
 
     @Override
     public Pagamento save(Pagamento pagamento) {
-        return repository.save(Objects.requireNonNull(pagamento, "Pagamento não pode ser nulo"));
+        var saved = repository.save(toDocument(Objects.requireNonNull(pagamento, "Pagamento não pode ser nulo")));
+        return toDomain(saved);
     }
 
     @Override
-    public java.util.Optional<Pagamento> findById(String id) {
-        return repository.findById(Objects.requireNonNull(id, "ID não pode ser nulo"));
+    public Optional<Pagamento> findById(String id) {
+        return repository.findById(Objects.requireNonNull(id, "ID não pode ser nulo")).map(this::toDomain);
+    }
+
+    private PagamentoDocument toDocument(Pagamento domain) {
+        return new PagamentoDocument(
+                domain.getId(),
+                domain.getAmount(),
+                domain.getSenderAccount(),
+                domain.getReceiverPixKey(),
+                domain.getStatus(),
+                domain.getErrorDescription()
+        );
+    }
+
+    private Pagamento toDomain(PagamentoDocument document) {
+        return new Pagamento(
+                document.getId(),
+                document.getAmount(),
+                document.getSenderAccount(),
+                document.getReceiverPixKey(),
+                document.getStatus(),
+                document.getErrorDescription()
+        );
     }
 }

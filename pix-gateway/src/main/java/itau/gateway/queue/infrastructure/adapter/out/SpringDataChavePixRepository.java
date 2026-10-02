@@ -6,19 +6,18 @@ import java.util.UUID;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import itau.gateway.queue.domain.model.chave.ChavePix;
 @Repository
-public interface SpringDataChavePixRepository extends MongoRepository<ChavePix, UUID> {
+public interface SpringDataChavePixRepository extends MongoRepository<ChavePixDocument, UUID> {
 
     boolean existsByValorChave(String valorChave);
 
-    List<ChavePix> findByTipoChave(String tipoChave);
-    
-    List<ChavePix> findByNumeroAgenciaAndNumeroConta(String numeroAgencia, String numeroConta);
+    List<ChavePixDocument> findByTipoChave(String tipoChave);
 
-    List<ChavePix> findByNomeCorrentista(String nomeCorrentista);
+    List<ChavePixDocument> findByNumeroAgenciaAndNumeroConta(String numeroAgencia, String numeroConta);
 
-    List<ChavePix> findByDataHoraInclusaoBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
+    List<ChavePixDocument> findByNomeCorrentista(String nomeCorrentista);
 
-    List<ChavePix> findByDataHoraInativacaoBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
+    List<ChavePixDocument> findByDataHoraInclusaoBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
+
+    List<ChavePixDocument> findByDataHoraInativacaoBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
 }

@@ -26,42 +26,76 @@ public class ChavePixRepositoryAdapter implements ChavePixRepositoryPort {
 
     @Override
     public ChavePix save(ChavePix chavePix) {
-        return repository.save(Objects.requireNonNull(chavePix, "ChavePix não pode ser nulo"));
+        var saved = repository.save(toDocument(Objects.requireNonNull(chavePix, "ChavePix não pode ser nulo")));
+        return toDomain(saved);
     }
 
     @Override
     public Optional<ChavePix> findById(UUID id) {
-        return repository.findById(Objects.requireNonNull(id, "UUID não pode ser nulo"));
+        return repository.findById(Objects.requireNonNull(id, "UUID não pode ser nulo")).map(this::toDomain);
     }
 
     @Override
     public List<ChavePix> findAll() {
-        return repository.findAll();
+        return repository.findAll().stream().map(this::toDomain).toList();
     }
 
     @Override
     public List<ChavePix> findByTipoChave(String tipoChave) {
-        return repository.findByTipoChave(tipoChave);
+        return repository.findByTipoChave(tipoChave).stream().map(this::toDomain).toList();
     }
 
     @Override
     public List<ChavePix> findByNumeroAgenciaAndNumeroConta(String numeroAgencia, String numeroConta) {
-        return repository.findByNumeroAgenciaAndNumeroConta(numeroAgencia, numeroConta);
+        return repository.findByNumeroAgenciaAndNumeroConta(numeroAgencia, numeroConta).stream().map(this::toDomain).toList();
     }
 
     @Override
     public List<ChavePix> findByNomeCorrentista(String nomeCorrentista) {
-        return repository.findByNomeCorrentista(nomeCorrentista);
+        return repository.findByNomeCorrentista(nomeCorrentista).stream().map(this::toDomain).toList();
     }
 
     @Override
     public List<ChavePix> findByDataHoraInclusaoBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fim) {
-        return repository.findByDataHoraInclusaoBetween(inicio, fim);
+        return repository.findByDataHoraInclusaoBetween(inicio, fim).stream().map(this::toDomain).toList();
     }
 
     @Override
     public List<ChavePix> findByDataHoraInativacaoBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fim) {
-        return repository.findByDataHoraInativacaoBetween(inicio, fim);
+        return repository.findByDataHoraInativacaoBetween(inicio, fim).stream().map(this::toDomain).toList();
     }
 
+    private ChavePixDocument toDocument(ChavePix domain) {
+        return ChavePixDocument.builder()
+                .id(domain.getId())
+                .tipoChave(domain.getTipoChave())
+                .valorChave(domain.getValorChave())
+                .tipoConta(domain.getTipoConta())
+                .numeroAgencia(domain.getNumeroAgencia())
+                .numeroConta(domain.getNumeroConta())
+                .nomeCorrentista(domain.getNomeCorrentista())
+                .sobrenomeCorrentista(domain.getSobrenomeCorrentista())
+                .saldo(domain.getSaldo())
+                .dataHoraInclusao(domain.getDataHoraInclusao())
+                .dataHoraInativacao(domain.getDataHoraInativacao())
+                .status(domain.getStatus())
+                .build();
+    }
+
+    private ChavePix toDomain(ChavePixDocument document) {
+        return ChavePix.builder()
+                .id(document.getId())
+                .tipoChave(document.getTipoChave())
+                .valorChave(document.getValorChave())
+                .tipoConta(document.getTipoConta())
+                .numeroAgencia(document.getNumeroAgencia())
+                .numeroConta(document.getNumeroConta())
+                .nomeCorrentista(document.getNomeCorrentista())
+                .sobrenomeCorrentista(document.getSobrenomeCorrentista())
+                .saldo(document.getSaldo())
+                .dataHoraInclusao(document.getDataHoraInclusao())
+                .dataHoraInativacao(document.getDataHoraInativacao())
+                .status(document.getStatus())
+                .build();
+    }
 }

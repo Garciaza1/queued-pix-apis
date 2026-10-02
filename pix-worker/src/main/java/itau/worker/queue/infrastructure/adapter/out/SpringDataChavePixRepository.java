@@ -6,13 +6,11 @@ import java.util.Optional;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import itau.worker.queue.domain.model.ChavePix;
-
 @Repository
-public interface SpringDataChavePixRepository extends MongoRepository<ChavePix, String> {
+public interface SpringDataChavePixRepository extends MongoRepository<ChavePixDocument, String> {
     boolean existsByValorChave(String valorChave);
-    List<ChavePix> findByTipoChave(String tipoChave);
-    List<ChavePix> findByNumeroAgenciaAndNumeroConta(String numeroAgencia, String numeroConta);
-    Optional<ChavePix> findByNumeroConta(String numeroConta);
-    Optional<ChavePix> findByValorChave(String valorChave);
+    List<ChavePixDocument> findByTipoChave(String tipoChave);
+    List<ChavePixDocument> findByNumeroAgenciaAndNumeroConta(String numeroAgencia, String numeroConta);
+    Optional<ChavePixDocument> findByNumeroConta(String numeroConta);
+    Optional<ChavePixDocument> findByValorChave(String valorChave);
 }
