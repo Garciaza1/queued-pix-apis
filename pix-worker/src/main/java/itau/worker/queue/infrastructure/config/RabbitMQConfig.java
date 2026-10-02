@@ -3,7 +3,6 @@ package itau.worker.queue.infrastructure.config;
 import java.util.Objects;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -35,15 +34,6 @@ public class RabbitMQConfig {
     @Bean
     public MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
-    }
-
-    @Bean
-    public CachingConnectionFactory rabbitConnectionFactory() {
-        CachingConnectionFactory factory = new CachingConnectionFactory(RabbitMQConstants.RABBIT_HOST);
-        factory.setUsername(RabbitMQConstants.RABBIT_USER);
-        factory.setPassword(RabbitMQConstants.RABBIT_PASSWORD);
-        factory.setPort(5672);
-        return factory;
     }
 
     @Bean
