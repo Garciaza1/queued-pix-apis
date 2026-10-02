@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
-import itau.persistence.queue.application.port.out.PagamentoRepositoryPort;
+import itau.persistence.queue.domain.port.out.PagamentoRepositoryPort;
 import itau.persistence.queue.domain.model.Pagamento;
 
 @Component

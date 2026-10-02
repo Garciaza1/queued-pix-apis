@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import itau.persistence.queue.application.port.out.ChavePixRepositoryPort;
+import itau.persistence.queue.domain.port.out.ChavePixRepositoryPort;
 import itau.persistence.queue.domain.model.ChavePix;
 
 @Component

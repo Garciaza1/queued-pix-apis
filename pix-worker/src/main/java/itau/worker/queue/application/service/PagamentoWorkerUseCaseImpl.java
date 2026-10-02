@@ -11,14 +11,14 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import itau.pix.commons.enums.StatusPagamento;
-import itau.worker.queue.application.port.in.PagamentoWorkerUseCase;
+import itau.worker.queue.domain.port.in.PagamentoWorkerUseCase;
 import itau.worker.queue.application.port.validator.PagamentoValidator;
 import itau.worker.queue.domain.model.ChavePix;
 import itau.worker.queue.domain.model.PagamentoMessage;
 import itau.worker.queue.domain.port.out.ChavePixRepositoryPort;
 
 @Service
-public class PagamentoWorkerService implements PagamentoWorkerUseCase {
+public class PagamentoWorkerUseCaseImpl implements PagamentoWorkerUseCase {
 
     private final RabbitTemplate rabbitTemplate;
     private final ChavePixRepositoryPort chavePixRepository;
@@ -27,7 +27,7 @@ public class PagamentoWorkerService implements PagamentoWorkerUseCase {
     private final Queue successQueue;
     private final PagamentoValidator validator;
 
-    public PagamentoWorkerService(
+    public PagamentoWorkerUseCaseImpl(
             @Lazy RabbitTemplate rabbitTemplate,
             ChavePixRepositoryPort chavePixRepository,
             @Qualifier("paymentQueue") Queue paymentQueue,

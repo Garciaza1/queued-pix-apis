@@ -1,4 +1,4 @@
-package itau.persistence.queue.application.port.in;
+package itau.persistence.queue.domain.port.in;
 
 import itau.persistence.queue.domain.model.PagamentoMessage;
 

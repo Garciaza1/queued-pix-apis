@@ -1,4 +1,4 @@
-package itau.persistence.queue.application.port.out;
+package itau.persistence.queue.domain.port.out;
 
 import java.util.Optional;
 

@@ -3,7 +3,7 @@ package itau.worker.queue.infrastructure.messaging;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-import itau.worker.queue.application.port.in.PagamentoWorkerUseCase;
+import itau.worker.queue.domain.port.in.PagamentoWorkerUseCase;
 import itau.worker.queue.domain.model.PagamentoMessage;
 
 @Component

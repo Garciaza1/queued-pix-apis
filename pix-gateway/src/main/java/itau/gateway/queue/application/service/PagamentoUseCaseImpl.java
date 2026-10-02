@@ -17,7 +17,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 @Service
-public class PagamentoService implements PagamentoUseCase {
+public class PagamentoUseCaseImpl implements PagamentoUseCase {
 
     private final IdGenerator idGenerator;
     private final PaymentRepositoryPort paymentRepository;
@@ -27,7 +27,7 @@ public class PagamentoService implements PagamentoUseCase {
             .expireAfterWrite(2, TimeUnit.MINUTES)
             .build();
 
-    public PagamentoService(IdGenerator idGenerator, PaymentRepositoryPort paymentRepository, RabbitTemplate rabbitTemplate) {
+    public PagamentoUseCaseImpl(IdGenerator idGenerator, PaymentRepositoryPort paymentRepository, RabbitTemplate rabbitTemplate) {
         this.idGenerator = idGenerator;
         this.paymentRepository = paymentRepository;
         this.rabbitTemplate = rabbitTemplate;

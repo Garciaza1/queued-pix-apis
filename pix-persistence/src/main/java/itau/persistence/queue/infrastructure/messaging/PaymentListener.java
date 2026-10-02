@@ -4,7 +4,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import itau.persistence.queue.application.port.in.PagamentoPersistenceUseCase;
+import itau.persistence.queue.domain.port.in.PagamentoPersistenceUseCase;
 import itau.persistence.queue.domain.model.PagamentoMessage;
 import itau.pix.commons.messaging.RabbitMQConstants;
 

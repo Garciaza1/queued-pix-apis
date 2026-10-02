@@ -1,4 +1,4 @@
-package itau.worker.queue.application.port.in;
+package itau.worker.queue.domain.port.in;
 
 import itau.worker.queue.domain.model.PagamentoMessage;
 

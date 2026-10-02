@@ -21,11 +21,11 @@ import itau.gateway.queue.domain.port.in.ChavePixUseCase;
 import itau.gateway.queue.domain.port.out.ChavePixRepositoryPort;
 
 @Service
-public class ChavePixService implements ChavePixUseCase {
+public class ChavePixUseCaseImpl implements ChavePixUseCase {
 
     private final ChavePixRepositoryPort repository;
 
-    public ChavePixService(ChavePixRepositoryPort repository) {
+    public ChavePixUseCaseImpl(ChavePixRepositoryPort repository) {
         this.repository = repository;
     }
 

@@ -6,21 +6,21 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import itau.persistence.queue.application.port.in.PagamentoPersistenceUseCase;
-import itau.persistence.queue.application.port.out.ChavePixRepositoryPort;
-import itau.persistence.queue.application.port.out.PagamentoRepositoryPort;
+import itau.persistence.queue.domain.port.in.PagamentoPersistenceUseCase;
+import itau.persistence.queue.domain.port.out.ChavePixRepositoryPort;
+import itau.persistence.queue.domain.port.out.PagamentoRepositoryPort;
 import itau.persistence.queue.domain.model.ChavePix;
 import itau.persistence.queue.domain.model.Pagamento;
 import itau.persistence.queue.domain.model.PagamentoMessage;
 import itau.pix.commons.enums.StatusPagamento;
 
 @Service
-public class PaymentPersistenceService implements PagamentoPersistenceUseCase {
+public class PagamentoPersistenceUseCaseImpl implements PagamentoPersistenceUseCase {
 
     private final PagamentoRepositoryPort repository;
     private final ChavePixRepositoryPort chavePixRepository;
 
-    public PaymentPersistenceService(PagamentoRepositoryPort repository, ChavePixRepositoryPort chavePixRepository) {
+    public PagamentoPersistenceUseCaseImpl(PagamentoRepositoryPort repository, ChavePixRepositoryPort chavePixRepository) {
         this.repository = repository;
         this.chavePixRepository = chavePixRepository;
     }
