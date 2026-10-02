@@ -1,4 +1,4 @@
-package itau.gateway.queue.infrastructure.adapter.out;
+package itau.gateway.queue.infrastructure.adapter.out.persistence.mongo.repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import itau.gateway.queue.domain.model.chave.ChavePix;
 import itau.gateway.queue.domain.port.out.ChavePixRepositoryPort;
+import itau.gateway.queue.infrastructure.adapter.out.persistence.mongo.document.ChavePixDocument;
 
 @Repository
 public class ChavePixRepositoryAdapter implements ChavePixRepositoryPort {

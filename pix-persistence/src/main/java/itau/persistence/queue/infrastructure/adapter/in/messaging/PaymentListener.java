@@ -1,4 +1,4 @@
-package itau.persistence.queue.infrastructure.messaging;
+package itau.persistence.queue.infrastructure.adapter.in.messaging;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;

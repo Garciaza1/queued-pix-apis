@@ -1,4 +1,4 @@
-package itau.worker.queue.infrastructure.messaging;
+package itau.worker.queue.infrastructure.adapter.in.messaging;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;

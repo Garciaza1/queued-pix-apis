@@ -1,4 +1,4 @@
-package itau.persistence.queue.infrastructure.adapter.out;
+package itau.persistence.queue.infrastructure.adapter.out.persistence.mongo.repository;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import itau.persistence.queue.domain.port.out.PagamentoRepositoryPort;
 import itau.persistence.queue.domain.model.Pagamento;
+import itau.persistence.queue.infrastructure.adapter.out.persistence.mongo.document.PagamentoDocument;
 
 @Component
 public class PagamentoRepositoryAdapter implements PagamentoRepositoryPort {

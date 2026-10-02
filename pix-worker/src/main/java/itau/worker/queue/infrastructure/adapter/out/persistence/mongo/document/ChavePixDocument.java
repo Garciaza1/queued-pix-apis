@@ -1,4 +1,4 @@
-package itau.worker.queue.infrastructure.adapter.out;
+package itau.worker.queue.infrastructure.adapter.out.persistence.mongo.document;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
